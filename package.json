@@ -11,14 +11,14 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:imas-color.helloWorld"
+    "onCommand:imas-color.insertIdolColor"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "imas-color.helloWorld",
-        "title": "Hello World"
+        "command": "imas-color.insertIdolColor",
+        "title": "アイドル名から個人カラーを検索"
       }
     ]
   },
@@ -44,5 +44,8 @@
     "prettier": "^2.3.0",
     "typescript": "^4.1.3",
     "vscode-test": "^1.5.0"
+  },
+  "dependencies": {
+    "axios": "^0.21.1"
   }
 }
