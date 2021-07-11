@@ -13,7 +13,7 @@ export const insertIdolColor = vscode.commands.registerTextEditorCommand(
     try {
       results = await fetchData(keyword)
     } catch (err) {
-      console.error(err)
+      vscode.window.showErrorMessage(err)
       return
     }
 
@@ -45,6 +45,7 @@ function getColors(results: any[]) {
       label: data.color.value,
       description: `${data.label.value} (${data.kana.value})`
     }
+
     items.push(item)
   }
 
@@ -59,20 +60,17 @@ async function fetchData(keyword: string) {
   PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
   
   SELECT DISTINCT ?label?kana ?color
-  
   WHERE {
     ?d rdf:type ?type;
        rdfs:label ?label;
        imas:Color ?c.
-
     FILTER(?type IN (imas:Idol, imas:Staff))
 
     OPTIONAL{ ?d schema:name ?name }
     OPTIONAL{ ?d imas:nameKana ?kana }
     OPTIONAL{ ?d imas:givenNameKana ?kana }
     OPTIONAL{ ?d imas:alternateNameKana ?kana }
-
-    FILTER(CONTAINS(?label, "${keyword}") || CONTAINS(?name, "${keyword}") || CONTAINS(?kana, "${keyword}")).
+    FILTER(CONTAINS(?label, "${keyword}") || CONTAINS(?name, "${keyword}") || CONTAINS(?kana, "${keyword}"))
 
     BIND(CONCAT("#", str(?c)) as ?color)
   }
@@ -80,19 +78,21 @@ async function fetchData(keyword: string) {
   LIMIT 10
   `
 
-  const url = `https://sparql.crssnky.xyz/spql/imas/query?output=json&query=${encodeURIComponent(
-    query
-  )}`
+  // const url = `https://sparql.crssnky.xyz/spql/imas/query?output=json&query=${encodeURIComponent(
+  //   query
+  // )}`
+
+  const url = 'https://ozuma.sakura.ne.jp/httpstatus/503'
 
   try {
     const res = await axios.get(url)
 
-    if (!res.data.results) {
-      throw new Error('not data')
+    if (!res.data?.results) {
+      throw new Error('データの取得に失敗しました')
     }
 
     return res.data.results.bindings
   } catch (err) {
-    throw new Error(`not access (${err.response.statusText})`)
+    throw new Error(`im@sparqlにアクセスできませんでした`)
   }
 }
